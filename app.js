@@ -5,6 +5,8 @@ var axios = require('axios');
 
 var hidden = require('./config.js');
 
+var api_url = hidden._api_url;
+
 nunjucks.configure('views', {
   autoescape: true,
   express: app,
@@ -20,8 +22,14 @@ app.get('/', function (req, res) {
   res.render('index.html');
 });
 
+//data is getting passed from front end
+app.post('/api', function (req, res) {
+  var data = req.body;
+  api_url = api_url+`${data.latitude},${data.longitude}`;
+});
+
 app.get('/api', function (req, res) {
-  var api_url = hidden._api_url;
+  console.log(api_url);
   var config = {};
 
   axios.get(api_url, config)
