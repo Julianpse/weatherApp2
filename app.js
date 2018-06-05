@@ -5,7 +5,7 @@ var axios = require('axios');
 
 var hidden = require('./config.js');
 
-var api_url = hidden._api_url;
+var api_url;
 
 nunjucks.configure('views', {
   autoescape: true,
@@ -25,7 +25,9 @@ app.get('/', function (req, res) {
 //Grabs the coordinates from front end AJAX
 app.post('/api', function (req, res) {
   var data = req.body;
-  api_url = api_url+`${data.latitude},${data.longitude}`;
+  var latitude = data.latitude;
+  var longitude = data.longitude;
+  api_url = hidden._api_url + `${latitude},${longitude}`;
 });
 
 app.get('/api', function (req, res) {
