@@ -22,7 +22,7 @@ app.get('/', function (req, res) {
   res.render('index.html');
 });
 
-//data is getting passed from front end
+//Grabs the coordinates from front end AJAX
 app.post('/api', function (req, res) {
   var data = req.body;
   api_url = api_url+`${data.latitude},${data.longitude}`;

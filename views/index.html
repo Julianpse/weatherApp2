@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,53 +10,107 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 
 </head>
+<style>
+  #top {
+    background-color: #7dd8f2;
+  }
+
+  #middle {
+    max-width: 60%;
+    height: 400px;
+    margin-left: 20%;
+  }
+
+  #loader{
+    justify-content:center;
+    margin-left: 45%;
+  }
+
+  .loader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid #7dd8f2;
+    width: 75px;
+    height: 75px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+  }
+
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
 <body>
-  <div class = "jumbotron text-center">
-    <h1>Hey</h1>
+  <div class="jumbotron text-center" id="top">
+    <h1>Your Local Weather</h1>
   </div>
-
-  <p>Click the button to get the weather in your area.</p>
-
-  <button id = "queryLocation" class = btn btn-primary>Get The Weather</button>
-
+  <div class="jumbotron text-center" id="middle">
+    <div id="temperature"></div>
+    <div id="summary"></div>
+    <div id="loader"></div>
+    <div id="instructions">
+      <p>Click the button to get the weather in your area.</p>
+      <button id="queryLocation" class="btn btn-primary">Get The Weather</button>
+    </div>
+  </div>
 </body>
-  <!--Bootstrap -->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!--Bootstrap -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
 
-  <script>
-
-    $(document).ready(function(){
-      $("#queryLocation").click(function(){
-        console.log("Finding the user's location");
-        getLocation();
-      });
+<script>
+  $(document).ready(function() {
+    $("#queryLocation").click(function() {
+      $("#instructions").toggle();
+      console.log("Finding the user's location");
+      getLocation();
     });
+  });
 
 
-function getLocation(){
-    navigator.geolocation.getCurrentPosition(function(position){
+  function getLocation() {
+    $("#loader").html('<div class="loader"></div>');
+    //FIXME: This method of geolocation is slow - Would be better to replace with an API (http://ip-api.com/)
+    navigator.geolocation.getCurrentPosition(function(position) {
       var data = {
-        latitude : position.coords.latitude,
-        longitude : position.coords.longitude
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
       };
-    console.log(data);
-    $.ajax({
-      type: 'POST',
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      url: '/api',
-      success: function(data) {
-        console.log('success');
-        console.log(JSON.stringify(data));
-            }
-        });
+      console.log(data);
+      $.ajax({
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        url: '/api',
+        success: function(data) {
+          console.log('success');
+          console.log(JSON.stringify(data));
+        }
+      });
+      getWeather();
     });
-}
+  }
 
+  function getWeather() {
+    $.getJSON("/api", function(data) {
+      var temperature = data.temperature;
+      var summary = data.summary;
 
+      $("#loader").toggle();
+      $("#temperature").html('<h1>' +temperature+ '&#8457;</h1>');
+      $("#summary").html('<h3>' +summary+ '</h3>');
 
+    });
+  }
+</script>
 
-  </script>
 </html>
