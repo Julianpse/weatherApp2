@@ -2,6 +2,8 @@ var app = require('express')();
 var nunjucks = require('nunjucks');
 var bodyParser = require('body-parser');
 var axios = require('axios');
+var apicache = require('apicache');
+var cache = apicache.middleware;
 
 var hidden = require('./config.js');
 
@@ -30,7 +32,7 @@ app.post('/api', function (req, res) {
   api_url = hidden._api_url + `${latitude},${longitude}`;
 });
 
-app.get('/api', function (req, res) {
+app.get('/api', cache('5 minutes'), function (req, res) {
   var config = {};
 
   axios.get(api_url, config)
