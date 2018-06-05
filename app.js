@@ -31,7 +31,6 @@ app.post('/api', function (req, res) {
 });
 
 app.get('/api', function (req, res) {
-  console.log(api_url);
   var config = {};
 
   axios.get(api_url, config)
